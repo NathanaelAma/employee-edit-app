@@ -26,10 +26,7 @@ class MyApp extends StatelessWidget {
       ),
       home: const Home(),
       initialRoute: '/',
-      routes: {
-        '/' : (context) =>  const Home(),
-        '/edit-employee' : (context) => const EditEmployee()
-      },
+      routes: {'/edit-employee': (context) => const EditEmployee()},
     );
   }
 }

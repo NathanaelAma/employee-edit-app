@@ -6,13 +6,11 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
-  static final DatabaseHelper _instance = DatabaseHelper._init();
+  static final DatabaseHelper instance = DatabaseHelper._init();
 
   static Database? _database;
 
-  factory DatabaseHelper() {
-    return _instance;
-  }
+  DatabaseHelper();
 
 
   DatabaseHelper._init();
@@ -20,11 +18,11 @@ class DatabaseHelper {
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    _database = await _initDatabase('employee.db');
+    _database = await initDatabase('employee.db');
     return _database!;
   }
 
-  Future<Database> _initDatabase(String filePath) async {
+  Future<Database> initDatabase(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
@@ -47,7 +45,7 @@ CREATE TABLE tblEmployee (
   }
 
   Future<int> createItem(Employee empl) async {
-    final db = await _instance.database;
+    final db = await instance.database;
 
     final id = await db.insert('tblEmployee', empl.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
@@ -55,7 +53,7 @@ CREATE TABLE tblEmployee (
   }
 
   Future<List<Employee>> getAllEmployees() async {
-    final db = await _instance.database;
+    final db = await instance.database;
 
     final result = await db.query('tblEmployee');
 
@@ -63,14 +61,14 @@ CREATE TABLE tblEmployee (
   }
 
   Future<Employee> getEmployee(int id) async {
-    final db = await _instance.database;
+    final db = await instance.database;
     final result =
         await db.query('tblEmployee', where: 'id = ?', whereArgs: [id]);
     return Employee.fromMap(result.first);
   }
 
   Future<void> deleteEmployee(int id) async {
-    final db = await _instance.database;
+    final db = await instance.database;
 
     try {
       await db.delete('tblEmployee', where: 'id = ?', whereArgs: [id]);
@@ -80,7 +78,7 @@ CREATE TABLE tblEmployee (
   }
 
   Future close() async {
-    final db = await _instance.database;
+    final db = await instance.database;
 
     return db.close();
   }

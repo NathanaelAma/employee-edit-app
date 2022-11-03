@@ -17,6 +17,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  late DatabaseHelper _databaseHelper;
+
+  @override
+  void initState() {
+    super.initState();
+    _databaseHelper = DatabaseHelper();
+    _databaseHelper.initDatabase('employee.db').whenComplete(() async {
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,9 +67,8 @@ class _HomeState extends State<Home> {
                     alignment: AlignmentDirectional.center,
                     child: const CircularProgressIndicator());
               })),
-      floatingActionButton: const FloatingActionButton(
-          onPressed: Navigator.pushNamed(context, '/edit-employee'),
-          child: Icon(Icons.add)),
+      floatingActionButton:
+          const FloatingActionButton(onPressed: null, child: Icon(Icons.add)),
     );
   }
 }

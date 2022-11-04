@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:employee_edit_app/model/employee.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
@@ -11,7 +9,6 @@ class DatabaseHelper {
   static Database? _database;
 
   DatabaseHelper();
-
 
   DatabaseHelper._init();
 
@@ -50,6 +47,17 @@ CREATE TABLE tblEmployee (
     final id = await db.insert('tblEmployee', empl.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
     return id;
+  }
+
+  Future<int> createEmployees(List<Employee> employees) async {
+    int result = 0;
+
+    final db = await instance.database;
+    for (var employee in employees) {
+      result = await db.insert('tblEmployee', employee.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+    return result;
   }
 
   Future<List<Employee>> getAllEmployees() async {

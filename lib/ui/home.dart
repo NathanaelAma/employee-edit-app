@@ -1,22 +1,29 @@
 import 'package:employee_edit_app/database/database_helper.dart';
 import 'package:employee_edit_app/model/employee.dart';
-import 'package:employee_edit_app/ui/edit_employee.dart';
 import 'package:flutter/material.dart';
 
-Future<List<Employee>> fetchEmployeesFromDatabase() async {
+Future<int> addEmployeesToDatabase() async {
   var dbHelper = DatabaseHelper();
-  Future<List<Employee>> employees = dbHelper.getAllEmployees();
-  return employees;
+  Employee dummy1 = const Employee(
+      id: 0, name: 'test1', position: 'test', employeeOrManager: true);
+  Employee dummy2 = const Employee(
+      id: 1, name: 'test2', position: 'test', employeeOrManager: true);
+  Employee dummy3 = const Employee(
+      id: 2, name: 'test3', position: 'test', employeeOrManager: true);
+
+  List<Employee> employees = [dummy1, dummy2, dummy3];
+
+  return await dbHelper.createEmployees(employees);
 }
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
 
   @override
-  _HomeState createState() => _HomeState();
+  HomeState createState() => HomeState();
 }
 
-class _HomeState extends State<Home> {
+class HomeState extends State<Home> {
   late DatabaseHelper _databaseHelper;
 
   @override
@@ -36,39 +43,30 @@ class _HomeState extends State<Home> {
       ),
       body: Container(
           padding: const EdgeInsets.all(16.0),
-          child: FutureBuilder<List<Employee>>(
-              future: fetchEmployeesFromDatabase(),
-              builder: (context, snapshot) {
+          child: FutureBuilder(
+              future: _databaseHelper.getAllEmployees(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<Employee>> snapshot) {
                 if (snapshot.hasData) {
                   return ListView.builder(
-                    itemBuilder: (context, index) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            snapshot.data![index].name,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18.0),
+                      itemCount: snapshot.data?.length,
+                      itemBuilder: (BuildContext context, index) {
+                        return Card(
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.all(8.0),
+                            title: Text(snapshot.data![index].name),
+                            subtitle: Text(snapshot.data![index].position),
                           ),
-                          Text(
-                            snapshot.data![index].position,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18.0),
-                          ),
-                          const Divider()
-                        ],
-                      );
-                    },
-                  );
-                } else if (snapshot.hasError) {
-                  return Text('There was a problem! ${snapshot.error}');
+                        );
+                      });
+                } else {
+                  return const Center(child: CircularProgressIndicator());
                 }
-                return Container(
-                    alignment: AlignmentDirectional.center,
-                    child: const CircularProgressIndicator());
               })),
-      floatingActionButton:
-          const FloatingActionButton(onPressed: null, child: Icon(Icons.add)),
+      floatingActionButton: const FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: null,
+      ),
     );
   }
 }

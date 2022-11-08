@@ -3,10 +3,10 @@ class Employee {
   final int id;
   final String name;
   final String position;
-  final bool employeeOrManager;
+  final int employeeOrManager;
 
   const Employee({
-    required this.id,
+    this.id = 0,
     required this.name,
     required this.position,
     required this.employeeOrManager,

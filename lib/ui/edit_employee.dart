@@ -12,10 +12,12 @@ class EditEmployeeState extends State<EditEmployee> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-      title: const Text(
-        'Add Employee',
+      appBar: AppBar(
+        title: const Text(
+          'Add Employee',
+        ),
       ),
-    ));
+      body: Container(),
+    );
   }
 }

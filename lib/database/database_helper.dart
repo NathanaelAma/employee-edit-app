@@ -4,45 +4,47 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class DatabaseHelper {
-  static final DatabaseHelper instance = DatabaseHelper._init();
-
-  static Database? _database;
-
-  DatabaseHelper();
-
-  DatabaseHelper._init();
-
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-
-    _database = await initDatabase('employee.db');
-    return _database!;
-  }
-
-  Future<Database> initDatabase(String filePath) async {
+  Future<Database> initDatabase() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
+    final path = join(dbPath, 'employeeDB.db');
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    if (kDebugMode) {
+      print('initDatabase() called');
+    }
+
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: (Database db, int version) async {
+        await db.execute(
+            'CREATE TABLE IF NOT EXISTS tblEmployee(id INTEGER PRIMARY KEY, employeeName TEXT NOT NULL, employeePosition TEXT NOT NULL, employeeOrManager TEXT NOT NULL');
+        if (kDebugMode) {
+          print('Database was created');
+        }
+      },
+    );
   }
 
   Future _createDB(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
-    const boolType = 'BOOLEAN NOT NULL';
+    const boolType = 'INTEGER NOT NULL';
     const textType = 'TEXT NOT NULL';
 
     await db.execute('''
-CREATE TABLE tblEmployee (
-  employeeID $idType,
+CREATE TABLE IF NOT EXISTS tblEmployee (
+  id $idType,
   employeeName $textType,
   employeePosition $textType,
   employeeOrManager $boolType
 )
 ''');
+    if (kDebugMode) {
+      print('createDB called()');
+    }
   }
 
-  Future<int> createItem(Employee empl) async {
-    final db = await instance.database;
+  Future<int> createEmployee(Employee empl) async {
+    final Database db = await initDatabase();
 
     final id = await db.insert('tblEmployee', empl.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
@@ -52,16 +54,21 @@ CREATE TABLE tblEmployee (
   Future<int> createEmployees(List<Employee> employees) async {
     int result = 0;
 
-    final db = await instance.database;
+    final Database db = await initDatabase();
     for (var employee in employees) {
-      result = await db.insert('tblEmployee', employee.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace);
+      result = await db.insert(
+        'tblEmployee',
+        employee.toMap(),
+      );
+    }
+    if (kDebugMode) {
+      print('createEmployees() called');
     }
     return result;
   }
 
   Future<List<Employee>> getAllEmployees() async {
-    final db = await instance.database;
+    final Database db = await initDatabase();
 
     final result = await db.query('tblEmployee');
 
@@ -69,24 +76,23 @@ CREATE TABLE tblEmployee (
   }
 
   Future<Employee> getEmployee(int id) async {
-    final db = await instance.database;
+    final Database db = await initDatabase();
     final result =
-        await db.query('tblEmployee', where: 'id = ?', whereArgs: [id]);
+        await db.query('tblEmployee', where: 'employeeId = ?', whereArgs: [id]);
     return Employee.fromMap(result.first);
   }
 
   Future<void> deleteEmployee(int id) async {
-    final db = await instance.database;
-
+    final db = await initDatabase();
     try {
-      await db.delete('tblEmployee', where: 'id = ?', whereArgs: [id]);
+      await db.delete('tblEmployee', where: 'employeeId = ?', whereArgs: [id]);
     } catch (err) {
       debugPrint('Something went wrong when deleting an item: $err');
     }
   }
 
   Future close() async {
-    final db = await instance.database;
+    final Database db = await initDatabase();
 
     return db.close();
   }

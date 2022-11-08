@@ -1,20 +1,7 @@
 import 'package:employee_edit_app/database/database_helper.dart';
 import 'package:employee_edit_app/model/employee.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-Future<int> addEmployeesToDatabase() async {
-  var dbHelper = DatabaseHelper();
-  Employee dummy1 = const Employee(
-      id: 0, name: 'test1', position: 'test', employeeOrManager: true);
-  Employee dummy2 = const Employee(
-      id: 1, name: 'test2', position: 'test', employeeOrManager: true);
-  Employee dummy3 = const Employee(
-      id: 2, name: 'test3', position: 'test', employeeOrManager: true);
-
-  List<Employee> employees = [dummy1, dummy2, dummy3];
-
-  return await dbHelper.createEmployees(employees);
-}
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -26,18 +13,40 @@ class Home extends StatefulWidget {
 class HomeState extends State<Home> {
   late DatabaseHelper _databaseHelper;
 
+  Future<int> addEmployeesToDatabase() async {
+    Employee dummy1 = const Employee(
+        id: 1, name: 'test1', position: 'test', employeeOrManager: 1);
+    Employee dummy2 = const Employee(
+        id: 2, name: 'test2', position: 'test', employeeOrManager: 0);
+    Employee dummy3 = const Employee(
+        id: 3, name: 'test3', position: 'test', employeeOrManager: 1);
+
+    List<Employee> employees = [dummy1, dummy2, dummy3];
+
+    if (kDebugMode) {
+      print('addEmployeesToDatabase() called');
+    }
+
+    return await _databaseHelper.createEmployees(employees);
+  }
+
   @override
   void initState() {
     super.initState();
     _databaseHelper = DatabaseHelper();
-    _databaseHelper.initDatabase('employee.db').whenComplete(() async {
+    _databaseHelper.initDatabase().whenComplete(() async {
+      await addEmployeesToDatabase();
+      if (kDebugMode) {
+        print('dummy employees added to db');
+      }
       setState(() {});
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return MaterialApp(
+        home: Scaffold(
       appBar: AppBar(
         title: const Text('Employee List'),
       ),
@@ -63,10 +72,12 @@ class HomeState extends State<Home> {
                   return const Center(child: CircularProgressIndicator());
                 }
               })),
-      floatingActionButton: const FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: null,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/edit-employee');
+        },
+        child: const Icon(Icons.add),
       ),
-    );
+    ));
   }
 }

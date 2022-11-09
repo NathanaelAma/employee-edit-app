@@ -1,11 +1,11 @@
 class Employee {
-  final int id;
+  final String id;
   final String employeeName;
   final String employeePosition;
   final int employeeOrManager;
 
   const Employee({
-    required  this.id,
+    required this.id,
     required this.employeeName,
     required this.employeePosition,
     required this.employeeOrManager,

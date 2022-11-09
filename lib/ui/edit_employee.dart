@@ -23,14 +23,15 @@ class EditEmployeeState extends State<EditEmployee> {
   late DefaultEmployeeOrManger _employeeOrManger =
       DefaultEmployeeOrManger.employee;
 
-  static const List<String> radioEmployeePositionList = <String>[
+  static const List<String> employeePositionList = <String>[
     'Intern',
     'Junior',
     'Senior',
     'Analyst'
   ];
 
-  String dropDownValue = radioEmployeePositionList.first;
+  String dropDownValue = employeePositionList.first;
+  String newDropDownValue = employeePositionList.first;
 
   @override
   void initState() {
@@ -43,15 +44,14 @@ class EditEmployeeState extends State<EditEmployee> {
         employeePosition: widget.employeeToEdit.employeePosition,
         employeeOrManager: widget.employeeToEdit.employeeOrManager);
 
-    _databaseHelper.initDatabase().whenComplete(() async {
-      employeeListLength = await _databaseHelper.getCount();
-    });
-
     textController.text = editingEmployee.employeeName;
     _employeeOrManger = editingEmployee.employeeOrManager == 0
         ? DefaultEmployeeOrManger.employee
         : DefaultEmployeeOrManger.manager;
     dropDownValue = editingEmployee.employeePosition;
+    _databaseHelper.initDatabase().whenComplete(() async {
+      employeeListLength = await _databaseHelper.getCount();
+    });
   }
 
   @override
@@ -88,7 +88,7 @@ class EditEmployeeState extends State<EditEmployee> {
               ),
               DropdownButtonFormField(
                 value: dropDownValue,
-                items: radioEmployeePositionList
+                items: employeePositionList
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
@@ -133,22 +133,20 @@ class EditEmployeeState extends State<EditEmployee> {
                   onPressed: (() {
                     if (formKey.currentState!.validate()) {
                       Employee newEmployee = Employee(
-                          id: employeeListLength! + 1,
+                          id: widget.employeeToEdit.id,
                           employeeName: textController.text,
                           employeePosition: dropDownValue,
                           employeeOrManager: _employeeOrManger ==
                                   DefaultEmployeeOrManger.manager
                               ? 1
                               : 0);
-                      _addEmployee(newEmployee);
                       setState(() {
+                        _updateEmployee(newEmployee);
                         _databaseHelper.initDatabase();
                       });
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const Home()), // this mymainpage is your page to refresh
+                        MaterialPageRoute(builder: (context) => const Home()),
                         (Route<dynamic> route) => false,
                       );
                     }
@@ -161,7 +159,7 @@ class EditEmployeeState extends State<EditEmployee> {
     );
   }
 
-  _addEmployee(Employee employee) {
+  _updateEmployee(Employee employee) {
     _databaseHelper.updateEmployee(employee);
   }
 }

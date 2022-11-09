@@ -2,6 +2,7 @@ import 'package:employee_edit_app/model/employee.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:uuid/uuid.dart';
 
 class DatabaseHelper {
   Future<Database> initDatabase() async {
@@ -17,7 +18,7 @@ class DatabaseHelper {
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-            'CREATE TABLE IF NOT EXISTS tblEmployee(id INTEGER PRIMARY KEY, employeeName TEXT NOT NULL, employeePosition TEXT NOT NULL, employeeOrManager INTEGER NOT NULL)');
+            'CREATE TABLE IF NOT EXISTS tblEmployee(id STRING PRIMARY KEY, employeeName TEXT NOT NULL, employeePosition TEXT NOT NULL, employeeOrManager INTEGER NOT NULL)');
       },
     );
   }
@@ -70,7 +71,7 @@ CREATE TABLE IF NOT EXISTS tblEmployee (
     return result.map((e) => Employee.fromMap(e)).toList();
   }
 
-  Future<Employee> getEmployee(int id) async {
+  Future<Employee> getEmployee(String id) async {
     final Database db = await initDatabase();
     final result =
         await db.query('tblEmployee', where: 'id = ?', whereArgs: [id]);
@@ -80,11 +81,13 @@ CREATE TABLE IF NOT EXISTS tblEmployee (
   Future<int> updateEmployee(Employee employee) async {
     final db = await initDatabase();
     final result = await db.update('tblEmployee', employee.toMap(),
-        where: 'id = ?', whereArgs: [employee.id]);
+        where: 'id = ?',
+        whereArgs: [employee.id],
+        conflictAlgorithm: ConflictAlgorithm.replace);
     return result;
   }
 
-  Future<void> deleteEmployee(int id) async {
+  Future<void> deleteEmployee(String id) async {
     final db = await initDatabase();
     try {
       await db.delete('tblEmployee', where: 'id = ?', whereArgs: [id]);

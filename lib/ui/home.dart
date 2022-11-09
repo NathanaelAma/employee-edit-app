@@ -4,6 +4,7 @@ import 'package:employee_edit_app/ui/add_employee.dart';
 import 'package:employee_edit_app/ui/edit_employee.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -14,39 +15,13 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   late DatabaseHelper _databaseHelper;
-
-  Future<int> addEmployeesToDatabase() async {
-    Employee dummy1 = const Employee(
-        id: 1,
-        employeeName: 'test1',
-        employeePosition: 'test',
-        employeeOrManager: 1);
-    Employee dummy2 = const Employee(
-        id: 2,
-        employeeName: 'test2',
-        employeePosition: 'test',
-        employeeOrManager: 0);
-    Employee dummy3 = const Employee(
-        id: 3,
-        employeeName: 'test3',
-        employeePosition: 'test',
-        employeeOrManager: 1);
-
-    List<Employee> employees = [dummy1, dummy2, dummy3];
-
-    if (kDebugMode) {
-      print('addEmployeesToDatabase() called');
-    }
-
-    return await _databaseHelper.createEmployees(employees);
-  }
+  late Uuid uuid = const Uuid();
 
   @override
   void initState() {
     super.initState();
     _databaseHelper = DatabaseHelper();
     _databaseHelper.initDatabase().whenComplete(() async {
-      //await addEmployeesToDatabase();
       if (kDebugMode) {
         print('initState finished');
       }

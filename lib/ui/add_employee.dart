@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 class AddEmployee extends StatefulWidget {
   const AddEmployee({Key? key}) : super(key: key);
+  static const String route = '/add';
 
   @override
   AddEmployeeState createState() => AddEmployeeState();
@@ -49,9 +50,7 @@ class AddEmployeeState extends State<AddEmployee> {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-    return MaterialApp(
-        title: 'Add Employee',
-        home: Scaffold(
+    return Scaffold(
           appBar: AppBar(
             title: const Text(
               'Add Employee',
@@ -90,6 +89,7 @@ class AddEmployeeState extends State<AddEmployee> {
                   ),
                   Row(
                     children: <Widget>[
+                      const Icon(Icons.computer),
                       Flexible(
                           child: RadioListTile<DefaultEmployeeOrManger>(
                               title: const Text('Employee'),
@@ -100,6 +100,7 @@ class AddEmployeeState extends State<AddEmployee> {
                                   _employeeOrManger = value!;
                                 });
                               })),
+                      const Icon(Icons.engineering),
                       Flexible(
                           child: RadioListTile<DefaultEmployeeOrManger>(
                               title: const Text('Manager'),
@@ -143,7 +144,7 @@ class AddEmployeeState extends State<AddEmployee> {
                   )
                 ],
               )),
-        ));
+        );
   }
 
   _addEmployee(Employee employee) {

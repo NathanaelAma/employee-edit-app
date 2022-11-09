@@ -1,5 +1,7 @@
 import 'package:employee_edit_app/database/database_helper.dart';
 import 'package:employee_edit_app/model/employee.dart';
+import 'package:employee_edit_app/ui/add_employee.dart';
+import 'package:employee_edit_app/ui/edit_employee.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +14,6 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   late DatabaseHelper _databaseHelper;
-  final bool _employeeOrManagerCheck = false;
 
   Future<int> addEmployeesToDatabase() async {
     Employee dummy1 = const Employee(
@@ -45,7 +46,7 @@ class HomeState extends State<Home> {
     super.initState();
     _databaseHelper = DatabaseHelper();
     _databaseHelper.initDatabase().whenComplete(() async {
-      await addEmployeesToDatabase();
+      //await addEmployeesToDatabase();
       if (kDebugMode) {
         print('initState finished');
       }
@@ -61,8 +62,7 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         title: const Text('Employee List'),
       ),
@@ -76,14 +76,12 @@ class HomeState extends State<Home> {
                   return ListView.builder(
                       itemCount: snapshot.data?.length,
                       itemBuilder: (BuildContext context, index) {
-                        _employeeOrManagerCheck
-                            ? snapshot.data![index].employeeOrManager == 1
-                            : snapshot.data![index].employeeOrManager == 0;
                         return Card(
                           child: ListTile(
-                            leading: _employeeOrManagerCheck
-                                ? const Icon(Icons.engineering_rounded)
-                                : const Icon(Icons.computer),
+                            leading:
+                                snapshot.data![index].employeeOrManager == 0
+                                    ? const Icon(Icons.computer)
+                                    : const Icon(Icons.engineering_rounded),
                             contentPadding: const EdgeInsets.all(8.0),
                             title: Text(snapshot.data![index].employeeName),
                             subtitle:
@@ -93,9 +91,12 @@ class HomeState extends State<Home> {
                               children: <Widget>[
                                 IconButton(
                                   onPressed: () {
-                                    Navigator.pushNamed(
-                                        context, '/edit-employee');
-                                    //arguments: snapshot.data![index].id);
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => EditEmployee(
+                                                employeeToEdit:
+                                                    snapshot.data![index])));
                                   },
                                   icon: const Icon(
                                     Icons.edit,
@@ -124,10 +125,10 @@ class HomeState extends State<Home> {
               })),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/add-employee');
+          Navigator.pushNamed(context, AddEmployee.route);
         },
         child: const Icon(Icons.add),
       ),
-    ));
+    );
   }
 }

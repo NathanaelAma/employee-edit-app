@@ -77,6 +77,13 @@ CREATE TABLE IF NOT EXISTS tblEmployee (
     return Employee.fromMap(result.first);
   }
 
+  Future<int> updateEmployee(Employee employee) async {
+    final db = await initDatabase();
+    final result = await db.update('tblEmployee', employee.toMap(),
+        where: 'id = ?', whereArgs: [employee.id]);
+    return result;
+  }
+
   Future<void> deleteEmployee(int id) async {
     final db = await initDatabase();
     try {

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'ui/add_employee.dart';
-import 'ui/edit_employee.dart';
 import 'ui/home.dart';
 
 void main() {
@@ -29,8 +28,7 @@ class MyApp extends StatelessWidget {
       home: const Home(),
       initialRoute: '/',
       routes: {
-        '/add-employee': (context) => const AddEmployee(),
-        '/edit-employee': (context) => const EditEmployee()
+        AddEmployee.route: (context) => const AddEmployee(),
       },
     );
   }

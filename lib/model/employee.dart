@@ -1,31 +1,28 @@
-
 class Employee {
   final int id;
-  final String name;
-  final String position;
+  final String employeeName;
+  final String employeePosition;
   final int employeeOrManager;
 
   const Employee({
-    this.id = 0,
-    required this.name,
-    required this.position,
+    required  this.id,
+    required this.employeeName,
+    required this.employeePosition,
     required this.employeeOrManager,
   });
 
   Employee.fromMap(Map<String, dynamic> item)
       : id = item['id'],
-        name = item['name'],
-        position = item['position'],
+        employeeName = item['employeeName'],
+        employeePosition = item['employeePosition'],
         employeeOrManager = item['employeeOrManager'];
 
   Map<String, Object> toMap() {
     return {
       'id': id,
-      'name': name,
-      'position': position,
+      'employeeName': employeeName,
+      'employeePosition': employeePosition,
       'employeeOrManager': employeeOrManager
     };
   }
-
-
 }

@@ -12,14 +12,24 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   late DatabaseHelper _databaseHelper;
+  final bool _employeeOrManagerCheck = false;
 
   Future<int> addEmployeesToDatabase() async {
     Employee dummy1 = const Employee(
-        id: 1, name: 'test1', position: 'test', employeeOrManager: 1);
+        id: 1,
+        employeeName: 'test1',
+        employeePosition: 'test',
+        employeeOrManager: 1);
     Employee dummy2 = const Employee(
-        id: 2, name: 'test2', position: 'test', employeeOrManager: 0);
+        id: 2,
+        employeeName: 'test2',
+        employeePosition: 'test',
+        employeeOrManager: 0);
     Employee dummy3 = const Employee(
-        id: 3, name: 'test3', position: 'test', employeeOrManager: 1);
+        id: 3,
+        employeeName: 'test3',
+        employeePosition: 'test',
+        employeeOrManager: 1);
 
     List<Employee> employees = [dummy1, dummy2, dummy3];
 
@@ -37,10 +47,16 @@ class HomeState extends State<Home> {
     _databaseHelper.initDatabase().whenComplete(() async {
       await addEmployeesToDatabase();
       if (kDebugMode) {
-        print('dummy employees added to db');
+        print('initState finished');
       }
       setState(() {});
     });
+  }
+
+  @override
+  void dispose() {
+    _databaseHelper.close();
+    super.dispose();
   }
 
   @override
@@ -60,11 +76,45 @@ class HomeState extends State<Home> {
                   return ListView.builder(
                       itemCount: snapshot.data?.length,
                       itemBuilder: (BuildContext context, index) {
+                        _employeeOrManagerCheck
+                            ? snapshot.data![index].employeeOrManager == 1
+                            : snapshot.data![index].employeeOrManager == 0;
                         return Card(
                           child: ListTile(
+                            leading: _employeeOrManagerCheck
+                                ? const Icon(Icons.engineering_rounded)
+                                : const Icon(Icons.computer),
                             contentPadding: const EdgeInsets.all(8.0),
-                            title: Text(snapshot.data![index].name),
-                            subtitle: Text(snapshot.data![index].position),
+                            title: Text(snapshot.data![index].employeeName),
+                            subtitle:
+                                Text(snapshot.data![index].employeePosition),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.pushNamed(
+                                        context, '/edit-employee');
+                                    //arguments: snapshot.data![index].id);
+                                  },
+                                  icon: const Icon(
+                                    Icons.edit,
+                                    size: 20,
+                                  ),
+                                ),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _databaseHelper.deleteEmployee(
+                                            snapshot.data![index].id);
+                                      });
+                                    },
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      size: 20,
+                                    ))
+                              ],
+                            ),
                           ),
                         );
                       });
@@ -74,7 +124,7 @@ class HomeState extends State<Home> {
               })),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(context, '/edit-employee');
+          Navigator.pushNamed(context, '/add-employee');
         },
         child: const Icon(Icons.add),
       ),

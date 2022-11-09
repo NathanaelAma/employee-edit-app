@@ -1,7 +1,8 @@
-import 'package:employee_edit_app/ui/edit_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'ui/add_employee.dart';
+import 'ui/edit_employee.dart';
 import 'ui/home.dart';
 
 void main() {
@@ -9,6 +10,7 @@ void main() {
     systemNavigationBarColor: Color.fromRGBO(94, 114, 228, 1.0),
     statusBarColor: Color.fromRGBO(94, 114, 228, 1.0),
   ));
+  WidgetsFlutterBinding.ensureInitialized();
 
   runApp(const MyApp());
 }
@@ -26,7 +28,10 @@ class MyApp extends StatelessWidget {
       ),
       home: const Home(),
       initialRoute: '/',
-      routes: {'/edit-employee': (context) => const EditEmployee()},
+      routes: {
+        '/add-employee': (context) => const AddEmployee(),
+        '/edit-employee': (context) => const EditEmployee()
+      },
     );
   }
 }

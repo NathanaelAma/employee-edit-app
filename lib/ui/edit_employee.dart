@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:employee_edit_app/database/database_helper.dart';
 import 'package:flutter/material.dart';
 
 class EditEmployee extends StatefulWidget {
@@ -9,12 +9,20 @@ class EditEmployee extends StatefulWidget {
 }
 
 class EditEmployeeState extends State<EditEmployee> {
+  late DatabaseHelper _databaseHelper;
+
+  @override
+  void dispose() {
+    _databaseHelper.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Add Employee',
+          'Edit Employee',
         ),
       ),
       body: Container(),

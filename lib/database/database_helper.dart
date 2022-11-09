@@ -17,10 +17,7 @@ class DatabaseHelper {
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute(
-            'CREATE TABLE IF NOT EXISTS tblEmployee(id INTEGER PRIMARY KEY, employeeName TEXT NOT NULL, employeePosition TEXT NOT NULL, employeeOrManager TEXT NOT NULL');
-        if (kDebugMode) {
-          print('Database was created');
-        }
+            'CREATE TABLE IF NOT EXISTS tblEmployee(id INTEGER PRIMARY KEY, employeeName TEXT NOT NULL, employeePosition TEXT NOT NULL, employeeOrManager INTEGER NOT NULL)');
       },
     );
   }
@@ -56,10 +53,8 @@ CREATE TABLE IF NOT EXISTS tblEmployee (
 
     final Database db = await initDatabase();
     for (var employee in employees) {
-      result = await db.insert(
-        'tblEmployee',
-        employee.toMap(),
-      );
+      result = await db.insert('tblEmployee', employee.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace);
     }
     if (kDebugMode) {
       print('createEmployees() called');
@@ -78,17 +73,29 @@ CREATE TABLE IF NOT EXISTS tblEmployee (
   Future<Employee> getEmployee(int id) async {
     final Database db = await initDatabase();
     final result =
-        await db.query('tblEmployee', where: 'employeeId = ?', whereArgs: [id]);
+        await db.query('tblEmployee', where: 'id = ?', whereArgs: [id]);
     return Employee.fromMap(result.first);
   }
 
   Future<void> deleteEmployee(int id) async {
     final db = await initDatabase();
     try {
-      await db.delete('tblEmployee', where: 'employeeId = ?', whereArgs: [id]);
+      await db.delete('tblEmployee', where: 'id = ?', whereArgs: [id]);
+      if (kDebugMode) {
+        print('deleteEmployee $id successfully');
+      }
     } catch (err) {
       debugPrint('Something went wrong when deleting an item: $err');
     }
+  }
+
+  Future<int?> getCount() async {
+    int? count = 0;
+    //database connection
+    final Database db = await initDatabase();
+    final x = await db.rawQuery('SELECT COUNT (*) from tblEmployee');
+    count = Sqflite.firstIntValue(x);
+    return count;
   }
 
   Future close() async {

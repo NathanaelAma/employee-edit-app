@@ -1,4 +1,4 @@
-import 'package:employee_edit_app/database/database_helper.dart';
+import 'package:employee_edit_app/api/api_helper.dart';
 import 'package:employee_edit_app/model/employee.dart';
 import 'package:employee_edit_app/ui/home.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,6 @@ class AddEmployee extends StatefulWidget {
 enum DefaultEmployeeOrManger { employee, manager }
 
 class AddEmployeeState extends State<AddEmployee> {
-  late DatabaseHelper _databaseHelper;
   late Uuid uuid = const Uuid();
   late TextEditingController textController;
   late DefaultEmployeeOrManger _employeeOrManger =
@@ -33,16 +32,12 @@ class AddEmployeeState extends State<AddEmployee> {
   @override
   void initState() {
     super.initState();
-    _databaseHelper = DatabaseHelper();
     textController = TextEditingController();
-
-    _databaseHelper.initDatabase().whenComplete(() async {});
   }
 
   @override
   void dispose() {
     textController.dispose();
-    _databaseHelper.close();
     super.dispose();
   }
 
@@ -125,9 +120,6 @@ class AddEmployeeState extends State<AddEmployee> {
                               ? 1
                               : 0);
                       _addEmployee(newEmployee);
-                      setState(() {
-                        _databaseHelper.initDatabase();
-                      });
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
@@ -146,6 +138,6 @@ class AddEmployeeState extends State<AddEmployee> {
   }
 
   _addEmployee(Employee employee) {
-    _databaseHelper.createEmployee(employee);
+    ApiHelper.createEmployee(employee);
   }
 }

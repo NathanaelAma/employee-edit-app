@@ -1,4 +1,4 @@
-import 'package:employee_edit_app/database/database_helper.dart';
+import 'package:employee_edit_app/api/api_helper.dart';
 import 'package:employee_edit_app/model/employee.dart';
 import 'package:employee_edit_app/ui/home.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,6 @@ class EditEmployee extends StatefulWidget {
 enum DefaultEmployeeOrManger { employee, manager }
 
 class EditEmployeeState extends State<EditEmployee> {
-  late DatabaseHelper _databaseHelper;
   late Employee editingEmployee;
   late int? employeeListLength;
   late TextEditingController textController;
@@ -31,12 +30,10 @@ class EditEmployeeState extends State<EditEmployee> {
   ];
 
   String dropDownValue = employeePositionList.first;
-  String newDropDownValue = employeePositionList.first;
 
   @override
   void initState() {
     super.initState();
-    _databaseHelper = DatabaseHelper();
     textController = TextEditingController();
     editingEmployee = Employee(
         id: widget.employeeToEdit.id,
@@ -49,15 +46,11 @@ class EditEmployeeState extends State<EditEmployee> {
         ? DefaultEmployeeOrManger.employee
         : DefaultEmployeeOrManger.manager;
     dropDownValue = editingEmployee.employeePosition;
-    _databaseHelper.initDatabase().whenComplete(() async {
-      employeeListLength = await _databaseHelper.getCount();
-    });
   }
 
   @override
   void dispose() {
     textController.dispose();
-    _databaseHelper.close();
     super.dispose();
   }
 
@@ -84,6 +77,7 @@ class EditEmployeeState extends State<EditEmployee> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an employee name';
                   }
+                  return null;
                 },
               ),
               DropdownButtonFormField(
@@ -142,7 +136,6 @@ class EditEmployeeState extends State<EditEmployee> {
                               : 0);
                       setState(() {
                         _updateEmployee(newEmployee);
-                        _databaseHelper.initDatabase();
                       });
                       Navigator.pushAndRemoveUntil(
                         context,
@@ -160,6 +153,6 @@ class EditEmployeeState extends State<EditEmployee> {
   }
 
   _updateEmployee(Employee employee) {
-    _databaseHelper.updateEmployee(employee);
+    ApiHelper.updateEmployee(employee);
   }
 }

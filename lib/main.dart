@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'ui/add_employee.dart';
 import 'ui/home.dart';
 
-void main() {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     systemNavigationBarColor: Color.fromRGBO(94, 114, 228, 1.0),
     statusBarColor: Color.fromRGBO(94, 114, 228, 1.0),

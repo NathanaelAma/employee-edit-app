@@ -1,8 +1,7 @@
-import 'package:employee_edit_app/database/database_helper.dart';
+import 'package:employee_edit_app/api/api_helper.dart';
 import 'package:employee_edit_app/model/employee.dart';
 import 'package:employee_edit_app/ui/add_employee.dart';
 import 'package:employee_edit_app/ui/edit_employee.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -14,24 +13,18 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  late DatabaseHelper _databaseHelper;
+  late Future<List<Employee>> employeeList;
   late Uuid uuid = const Uuid();
 
   @override
   void initState() {
+    
     super.initState();
-    _databaseHelper = DatabaseHelper();
-    _databaseHelper.initDatabase().whenComplete(() async {
-      if (kDebugMode) {
-        print('initState finished');
-      }
-      setState(() {});
-    });
+    employeeList = ApiHelper.getEmployees();
   }
 
   @override
   void dispose() {
-    _databaseHelper.close();
     super.dispose();
   }
 
@@ -44,7 +37,7 @@ class HomeState extends State<Home> {
       body: Container(
           padding: const EdgeInsets.all(16.0),
           child: FutureBuilder(
-              future: _databaseHelper.getAllEmployees(),
+              future: employeeList,
               builder: (BuildContext context,
                   AsyncSnapshot<List<Employee>> snapshot) {
                 if (snapshot.hasData) {
@@ -81,7 +74,7 @@ class HomeState extends State<Home> {
                                 IconButton(
                                     onPressed: () {
                                       setState(() {
-                                        _databaseHelper.deleteEmployee(
+                                        ApiHelper.deleteEmployee(
                                             snapshot.data![index].id);
                                       });
                                     },
@@ -105,5 +98,11 @@ class HomeState extends State<Home> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  //Widget _listView(AsyncSnapshot snapshot) {}
+
+  Future<void> _pullRefresh() async {
+    List<Employee> newEmployees = await ApiHelper.getEmployees();
   }
 }

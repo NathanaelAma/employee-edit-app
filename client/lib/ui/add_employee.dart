@@ -63,6 +63,9 @@ class AddEmployeeState extends State<AddEmployee> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter an employee name';
                   }
+                  else{
+                    return null;
+                  }
                 },
               ),
               DropdownButtonFormField(
@@ -124,7 +127,7 @@ class AddEmployeeState extends State<AddEmployee> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const Home()), // this mymainpage is your page to refresh
+                                const Home()), // this my main page is your page to refresh
                         (Route<dynamic> route) => false,
                       );
                     }

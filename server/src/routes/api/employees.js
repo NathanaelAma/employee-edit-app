@@ -65,13 +65,17 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
-    const deleteEmployee = await prisma.tblEmployee.delete({
-        where: {
-            id: String(id),
-        }
-    })
-    res.json(deleteEmployee);
+    try {
+        const deleteEmployee = await prisma.tblEmployee.delete({
+            where: {
+                id: String(id),
+            }
+        })
+        res.json(deleteEmployee);
+    } catch (error) {
+        res.json({ error: `Employee with ID ${id} does not exist in the database` })
 
+    }
 });
 
 module.exports = router;

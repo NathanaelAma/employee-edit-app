@@ -39,7 +39,7 @@ class ApiHelper {
         print('Error: $e');
       }
     }
-    throw Exception('Failed to to get url');
+    throw Exception('Failed to get url');
   }
 
   static Future createEmployee(Employee employee) async {
@@ -59,7 +59,7 @@ class ApiHelper {
         print('Error: $e');
       }
     }
-    throw Exception('Failed to to get url');
+    throw Exception('Failed to get url');
   }
 
   static Future updateEmployee(Employee employee) async {
@@ -79,7 +79,7 @@ class ApiHelper {
         print('Error: $e');
       }
     }
-    throw Exception('Failed to to get url');
+    throw Exception('Failed to get url');
   }
 
   static Future deleteEmployee(String id) async {
@@ -95,6 +95,6 @@ class ApiHelper {
         print('Error: $e');
       }
     }
-    throw Exception('Failed to to get url');
+    throw Exception('Failed to get url');
   }
 }

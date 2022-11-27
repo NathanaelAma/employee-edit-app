@@ -1,7 +1,7 @@
 import 'package:employee_edit_app/api/api_helper.dart';
 import 'package:employee_edit_app/model/employee.dart';
-import 'package:employee_edit_app/ui/add_employee.dart';
-import 'package:employee_edit_app/ui/edit_employee.dart';
+import 'package:employee_edit_app/ui/employee/add_employee.dart';
+import 'package:employee_edit_app/ui/employee/edit_employee.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
@@ -56,6 +56,7 @@ class HomeState extends State<Home> {
                                 Text(snapshot.data![index].employeePosition),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.end,
                               children: <Widget>[
                                 IconButton(
                                   onPressed: () {
@@ -92,6 +93,7 @@ class HomeState extends State<Home> {
                 }
               })),
       floatingActionButton: FloatingActionButton(
+
         onPressed: () {
           Navigator.pushNamed(context, AddEmployee.route);
         },

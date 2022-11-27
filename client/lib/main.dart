@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'ui/add_employee.dart';
+import 'ui/employee/add_employee.dart';
 import 'ui/home.dart';
 
 void main() async {

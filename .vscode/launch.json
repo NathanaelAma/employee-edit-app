@@ -3,17 +3,10 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "java",
-            "name": "Launch Java Program",
-            "request": "launch",
-            "mainClass": ""
-        },
-        {
+    "configurations": [{
             "type": "node",
             "request": "launch",
-            "name": "nodemon",
+            "name": "Run express server",
             "runtimeExecutable": "${workspaceFolder}/server/node_modules/nodemon/bin/nodemon.js",
             "restart": true,
             "console": "integratedTerminal",
@@ -27,11 +20,11 @@
 
         },
         {
-            "name": "Main",
+            "name": "Flutter client",
             "type": "dart",
             "request": "launch",
             "program": "${workspaceFolder}/client/lib/main.dart"
         },
-        
+
     ]
 }

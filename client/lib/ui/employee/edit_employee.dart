@@ -15,8 +15,6 @@ class EditEmployee extends StatefulWidget {
 enum DefaultEmployeeOrManger { employee, manager }
 
 class EditEmployeeState extends State<EditEmployee> {
-  
-
   @override
   void initState() {
     super.initState();
@@ -29,7 +27,6 @@ class EditEmployeeState extends State<EditEmployee> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
         appBar: AppBar(
           title: const Text(
@@ -40,5 +37,4 @@ class EditEmployeeState extends State<EditEmployee> {
           employeeToEdit: widget.employeeToEdit,
         ));
   }
-
 }

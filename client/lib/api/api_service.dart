@@ -3,13 +3,14 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import '../model/employee.dart';
-import 'api_constants.dart';
+import '../globals.dart';
 
-class ApiHelper {
+class ApiService {
+
   static Future<List<Employee>> getEmployees() async {
     try {
       var url = Uri.parse(
-          "http://${ApiConstants.baseUrl}:${ApiConstants.port}${ApiConstants.apiEndpoint}");
+          "http://${Globals.baseUrl}:${Globals.port}${Globals.apiEndpoint}");
       http.Response response = await http.get(url);
       if (response.statusCode == 200) {
         List<Employee> employeeList = employeesFromMap(response.body);
@@ -26,7 +27,7 @@ class ApiHelper {
   static Future<Employee> getEmployee(String id) async {
     try {
       var url = Uri.parse(
-          "http://${ApiConstants.baseUrl}:${ApiConstants.port}${ApiConstants.apiEndpoint}/$id");
+          "http://${Globals.baseUrl}:${Globals.port}${Globals.apiEndpoint}/$id");
       http.Response response = await http.get(
         url,
       );
@@ -45,7 +46,7 @@ class ApiHelper {
   static Future createEmployee(Employee employee) async {
     try {
       var url = Uri.parse(
-          "http://${ApiConstants.baseUrl}:${ApiConstants.port}${ApiConstants.apiEndpoint}");
+          "http://${Globals.baseUrl}:${Globals.port}${Globals.apiEndpoint}");
       http.Response response = await http.post(url,
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
@@ -65,7 +66,7 @@ class ApiHelper {
   static Future updateEmployee(Employee employee) async {
     try {
       var url = Uri.parse(
-          "http://${ApiConstants.baseUrl}:${ApiConstants.port}${ApiConstants.apiEndpoint}/${employee.id}");
+          "http://${Globals.baseUrl}:${Globals.port}${Globals.apiEndpoint}/${employee.id}");
       http.Response response = await http.put(url,
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
@@ -82,10 +83,10 @@ class ApiHelper {
     throw Exception('Failed to get url');
   }
 
-  static Future deleteEmployee(String id) async {
+  static Future deleteEmployee(String? id) async {
     try {
       var url = Uri.parse(
-          "http://${ApiConstants.baseUrl}:${ApiConstants.port}${ApiConstants.apiEndpoint}/$id");
+          "http://${Globals.baseUrl}:${Globals.port}${Globals.apiEndpoint}/$id");
       http.Response response = await http.delete(url);
       if (response.statusCode == 200) {
         return response.body;

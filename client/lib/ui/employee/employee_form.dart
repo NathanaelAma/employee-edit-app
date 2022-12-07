@@ -1,8 +1,10 @@
 import 'package:employee_edit_app/globals.dart';
+import 'package:employee_edit_app/provider/employee_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../api/api_helper.dart';
+import '../../api/api_service.dart';
 import '../../model/employee.dart';
 import '../home.dart';
 
@@ -17,10 +19,9 @@ class EmployeeForm extends StatefulWidget {
 }
 
 class _EmployeeFormState extends State<EmployeeForm> {
-  bool editing = false;
+  bool editMode = false;
   late Uuid uuid = const Uuid();
   late Employee editingEmployee;
-  late int? employeeListLength;
   late TextEditingController textEditingController;
   late DefaultEmployeeOrManger employeeOrManger =
       DefaultEmployeeOrManger.employee;
@@ -34,10 +35,10 @@ class _EmployeeFormState extends State<EmployeeForm> {
     super.initState();
     textEditingController = TextEditingController();
     widget.employeeToEdit?.id.isNotEmpty == true
-        ? editing = true
-        : editing = false;
+        ? editMode = true
+        : editMode = false;
 
-    if (editing) {
+    if (editMode) {
       editingEmployee = Employee(
           id: widget.employeeToEdit!.id,
           employeeName: widget.employeeToEdit!.employeeName,
@@ -49,102 +50,125 @@ class _EmployeeFormState extends State<EmployeeForm> {
           ? DefaultEmployeeOrManger.employee
           : DefaultEmployeeOrManger.manager;
       dropDownValue = editingEmployee.employeePosition;
-    } else {}
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          TextFormField(
-            controller: textEditingController,
-            decoration: const InputDecoration(
-                border: OutlineInputBorder(), labelText: 'Employee Name'),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter an employee name';
-              }
-              return null;
-            },
-          ),
-          DropdownButtonFormField(
-            value: dropDownValue,
-            items: employeePositionList
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (String? value) {
-              dropDownValue = value!;
-            },
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              const Icon(Icons.computer),
-              Flexible(
-                  child: RadioListTile<DefaultEmployeeOrManger>(
-                      title: const Text('Employee'),
-                      value: DefaultEmployeeOrManger.employee,
-                      groupValue: employeeOrManger,
-                      onChanged: (DefaultEmployeeOrManger? value) {
-                        employeeOrManger = value!;
-                      })),
-              const Icon(Icons.engineering),
-              Flexible(
-                  child: RadioListTile<DefaultEmployeeOrManger>(
-                      title: const Text('Manager'),
-                      value: DefaultEmployeeOrManger.manager,
-                      groupValue: employeeOrManger,
-                      onChanged: (DefaultEmployeeOrManger? value) {
-                        employeeOrManger = value!;
-                      }))
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: ElevatedButton(
-              onPressed: (() {
-                if (formKey.currentState!.validate()) {
-                  if (editing) {
-                    Employee newEmployee = Employee(
-                        id: widget.employeeToEdit!.id,
-                        employeeName: textEditingController.text,
-                        employeePosition: dropDownValue,
-                        employeeOrManager:
-                            employeeOrManger == DefaultEmployeeOrManger.manager
-                                ? 1
-                                : 0);
+    
+    return Consumer<EmployeeProvider>(
+      builder: (context, employeeProvider, child) {
+        return Form(
+          key: formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                TextFormField(
+                  controller: textEditingController,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Employee Name',
+                      hintText: "Enter Employee Name"),
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter an employee name';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                DropdownButtonFormField(
+                  icon: const Icon(Icons.arrow_downward),
+                  value: dropDownValue,
+                  items: employeePositionList
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? value) {
+                    dropDownValue = value!;
+                  },
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    const Icon(Globals.employeeIcon),
+                    Expanded(
+                        child: RadioListTile<DefaultEmployeeOrManger>(
+                            title: const Text('Employee'),
+                            value: DefaultEmployeeOrManger.employee,
+                            groupValue: employeeOrManger,
+                            onChanged: (value) {
+                              setState(() {
+                                employeeOrManger = value!;
+                              });
+                            })),
+                    const Icon(Globals.managerIcon),
+                    Expanded(
+                        child: RadioListTile<DefaultEmployeeOrManger>(
+                            title: const Text('Manager'),
+                            value: DefaultEmployeeOrManger.manager,
+                            groupValue: employeeOrManger,
+                            onChanged: (value) {
+                              setState(() {
+                                employeeOrManger = value!;
+                              });
+                            }))
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: ElevatedButton(
+                    onPressed: (() {
+                      if (formKey.currentState!.validate()) {
+                        if (editMode) {
+                          Employee newEmployee = Employee(
+                              id: widget.employeeToEdit!.id,
+                              employeeName: textEditingController.text,
+                              employeePosition: dropDownValue,
+                              employeeOrManager: employeeOrManger ==
+                                      DefaultEmployeeOrManger.manager
+                                  ? 1
+                                  : 0);
 
-                    _updateEmployee(newEmployee);
-                  } else {
-                    Employee newEmployee = Employee(
-                        id: uuid.v4(),
-                        employeeName: textEditingController.text,
-                        employeePosition: dropDownValue,
-                        employeeOrManager:
-                            employeeOrManger == DefaultEmployeeOrManger.manager
-                                ? 1
-                                : 0);
-                    _addEmployee(newEmployee);
-                  }
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Home()),
-                    (Route<dynamic> route) => false,
-                  );
-                }
-              }),
-              child: editing? const Text('Add Employee') : const Text('Edit Employee'),
+                          _updateEmployee(newEmployee);
+                        } else {
+                          Employee newEmployee = Employee(
+                              id: uuid.v4(),
+                              employeeName: textEditingController.text,
+                              employeePosition: dropDownValue,
+                              employeeOrManager: employeeOrManger ==
+                                      DefaultEmployeeOrManger.manager
+                                  ? 1
+                                  : 0);
+                          _addEmployee(newEmployee);
+                        }
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Home()),
+                          (Route<dynamic> route) => false,
+                        );
+                      }
+                    }),
+                    child: editMode
+                        ? const Text('Edit Employee')
+                        : const Text('Add Employee'),
+                  ),
+                )
+              ],
             ),
-          )
-        ],
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -156,9 +180,9 @@ class _EmployeeFormState extends State<EmployeeForm> {
 }
 
 _updateEmployee(Employee employee) {
-  ApiHelper.updateEmployee(employee);
+  ApiService.updateEmployee(employee);
 }
 
 _addEmployee(Employee employee) {
-  ApiHelper.createEmployee(employee);
+  ApiService.createEmployee(employee);
 }

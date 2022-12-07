@@ -16,22 +16,45 @@ class Employee {
         required this.employeeOrManager,
     });
 
-    final String id;
-    final String employeeName;
-    final String employeePosition;
-    final int employeeOrManager;
+    String id;
+    String employeeName;
+    String employeePosition;
+    int employeeOrManager;
 
     factory Employee.fromMap(Map<String, dynamic> json) => Employee(
         id: json["id"],
-        employeeName: json["employeeName"],
-        employeePosition: json["employeePosition"],
-        employeeOrManager: json["employeeOrManager"],
+        employeeName: json["employee_name"],
+        employeeOrManager: json["employee_or_manager"],
+        employeePosition: json["employee_position"],
     );
 
     Map<String, dynamic> toMap() => {
         "id": id,
-        "employeeName": employeeName,
-        "employeePosition": employeePosition,
-        "employeeOrManager": employeeOrManager,
+        "employee_name": employeeName,
+        "employee_or_manager": employeeOrManager,
+        "employee_position": employeePosition,
     };
+
+  //getters
+  String get getId => id;
+  String get getEmployeeName => employeeName;
+  String get getEmployeePosition => employeePosition;
+  int get getEmployeeOrManager => employeeOrManager;
+
+  //setters
+  void setId(String id) {
+    this.id = id;
+  }
+
+  void setEmployeeName(String employeeName) {
+    this.employeeName = employeeName;
+  }
+
+  void setEmployeePosition(String employeePosition) {
+    this.employeePosition = employeePosition;
+  }
+
+  void setEmployeeOrManager(int employeeOrManager) {
+    this.employeeOrManager = employeeOrManager;
+  }
 }

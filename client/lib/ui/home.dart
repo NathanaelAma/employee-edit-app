@@ -1,9 +1,15 @@
-import 'package:employee_edit_app/api/api_helper.dart';
+import 'package:employee_edit_app/api/api_service.dart';
+import 'package:employee_edit_app/globals.dart';
 import 'package:employee_edit_app/model/employee.dart';
 import 'package:employee_edit_app/ui/employee/add_employee.dart';
 import 'package:employee_edit_app/ui/employee/edit_employee.dart';
+import 'package:employee_edit_app/ui/employee/employee_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+
+import '../provider/employee_provider.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -13,14 +19,12 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  late Future<List<Employee>> employeeList;
   late Uuid uuid = const Uuid();
+  bool isFabVisible = true;
 
   @override
   void initState() {
-    
     super.initState();
-    employeeList = ApiHelper.getEmployees();
   }
 
   @override
@@ -30,81 +34,64 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    //print();
+    context.read<EmployeeProvider>().fetchEmployees();
+    print("context.read<EmployeeProvider>().fetchEmployees();");
     return Scaffold(
       appBar: AppBar(
         title: const Text('Employee List'),
+        actions: [
+          IconButton(
+            icon: const Icon(Globals.refreshIcon),
+            onPressed: () {
+              context.read<EmployeeProvider>().fetchEmployees();
+            },
+          ),
+        ],
       ),
-      body: Container(
-          padding: const EdgeInsets.all(16.0),
-          child: FutureBuilder(
-              future: employeeList,
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<Employee>> snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                      itemCount: snapshot.data?.length,
-                      itemBuilder: (BuildContext context, index) {
-                        return Card(
-                          child: ListTile(
-                            leading:
-                                snapshot.data![index].employeeOrManager == 0
-                                    ? const Icon(Icons.computer)
-                                    : const Icon(Icons.engineering_rounded),
-                            contentPadding: const EdgeInsets.all(8.0),
-                            title: Text(snapshot.data![index].employeeName),
-                            subtitle:
-                                Text(snapshot.data![index].employeePosition),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: <Widget>[
-                                IconButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => EditEmployee(
-                                                employeeToEdit:
-                                                    snapshot.data![index])));
-                                  },
-                                  icon: const Icon(
-                                    Icons.edit,
-                                    size: 20,
-                                  ),
-                                ),
-                                IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        ApiHelper.deleteEmployee(
-                                            snapshot.data![index].id);
-                                      });
-                                    },
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      size: 20,
-                                    ))
-                              ],
-                            ),
-                          ),
-                        );
-                      });
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              })),
-      floatingActionButton: FloatingActionButton(
-
-        onPressed: () {
-          Navigator.pushNamed(context, AddEmployee.route);
+      body: RefreshIndicator(
+        onRefresh: () {
+          return context.read<EmployeeProvider>().fetchEmployees();
         },
-        child: const Icon(Icons.add),
+        child: Center(
+          child: Consumer<EmployeeProvider>(
+          builder: (context, employeeProvider, child) {
+            return employeeProvider.employeeList.isEmpty &&
+                    !employeeProvider.isLoading
+                ? const CircularProgressIndicator()
+                : employeeProvider.isLoading
+                    ? const Text("No employees found")
+                    : ListView.builder(
+                        itemBuilder: (context, index) {
+                          return EmployeeCard(
+                              employee: employeeProvider.employeeList[index]);
+                        },
+                      );
+          },
+        )),
       ),
+      floatingActionButton: isFabVisible
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.pushNamed(context, AddEmployee.route);
+              },
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 
-  //Widget _listView(AsyncSnapshot snapshot) {}
+  // Future<Future<List<Employee>>> _pullRefresh()  {
 
-  Future<void> _pullRefresh() async {
-    List<Employee> newEmployees = await ApiHelper.getEmployees();
+  //   _showToast("Data has been updated");
+
+  // }
+
+  //shows a custom toast prompt
+  void _showToast(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 2),
+    ));
   }
 }

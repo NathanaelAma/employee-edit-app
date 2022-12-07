@@ -1,5 +1,7 @@
+import 'package:employee_edit_app/provider/employee_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import 'ui/employee/add_employee.dart';
 import 'ui/home.dart';
@@ -25,7 +27,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Home(),
+      home:  ChangeNotifierProvider(
+        create: (context) => EmployeeProvider(),
+        builder:(context, child) {
+        return const Home();
+      },),
       initialRoute: '/',
       routes: {
         AddEmployee.route: (context) => const AddEmployee(),

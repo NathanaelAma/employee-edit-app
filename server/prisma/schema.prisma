@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model tbl_employee {
+  id                  String  @id
+  employee_name       String?
+  employee_or_manager Int?    @default(0)
+  employee_position   String?
+}
+
 model tblEmployee {
   id                String @id(map: "id")
   employeeName      String

@@ -7,15 +7,14 @@ const prisma = new PrismaClient();
 
 //This gets all the employees
 router.get('/', async (req, res) => {
-    const allEmployees = await prisma.tblEmployee.findMany();
+    const allEmployees = await prisma.tbl_employee.findMany();
     res.json(allEmployees);
-
 });
 
 //This gets a single employee
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
-    const singleEmployee = await prisma.tblEmployee.findUnique({
+    const singleEmployee = await prisma.tbl_employee.findUnique({
         where: {
             id: String(id)
         }
@@ -25,14 +24,14 @@ router.get('/:id', async (req, res) => {
 
 //Create Employee
 router.post('/', async (req, res) => {
-    const { employeeName, employeePosition, employeeOrManager } = req.body;
+    const { employee_name, employee_position, employee_or_manager } = req.body;
 
-    const newEmployee = await prisma.tblEmployee.create({
+    const newEmployee = await prisma.tbl_employee.create({
         data: {
             id: String(uuid.v4()),
-            employeeName,
-            employeePosition,
-            employeeOrManager,
+            employee_name,
+            employee_position,
+            employee_or_manager,
         }
     })
     res.json(newEmployee);
@@ -41,16 +40,16 @@ router.post('/', async (req, res) => {
 //Update Employee
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { employeeName, employeePosition, employeeOrManager } = req.body;
+    const { employee_name, employee_position, employee_or_manager } = req.body;
     try {
-        const updateEmployee = await prisma.tblEmployee.update({
+        const updateEmployee = await prisma.tbl_employee.update({
             where: {
                 id: String(id),
             },
             data: {
-                employeeName,
-                employeePosition,
-                employeeOrManager
+                employee_name,
+                employee_position,
+                employee_or_manager
             }
         })
         res.json(updateEmployee);
@@ -66,7 +65,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
-        const deleteEmployee = await prisma.tblEmployee.delete({
+        const deleteEmployee = await prisma.tbl_employee.delete({
             where: {
                 id: String(id),
             }

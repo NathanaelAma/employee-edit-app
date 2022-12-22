@@ -1,21 +1,11 @@
-import 'package:dynamic_color/dynamic_color.dart';
-import 'package:employee_edit_app/provider/employee_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
-import 'ui/employee/add_employee.dart';
-import 'ui/home.dart';
+import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter/material.dart';
+
 import 'util/color_schemes.g.dart';
 import 'util/custom_color.g.dart';
 
-void main() async {
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    systemNavigationBarColor: Color.fromRGBO(94, 114, 228, 1.0),
-    statusBarColor: Color.fromRGBO(94, 114, 228, 1.0),
-  ));
-  WidgetsFlutterBinding.ensureInitialized();
-
+void main() {
   runApp(const MyApp());
 }
 
@@ -54,17 +44,37 @@ class MyApp extends StatelessWidget {
             colorScheme: darkScheme,
             extensions: [darkCustomColors],
           ),
-          home: ChangeNotifierProvider(
-        create: (context) => EmployeeProvider(),
-        builder:(context, child) {
-        return const Home();
-      },),
-      initialRoute: '/',
-      routes: {
-        AddEmployee.route: (context) => const AddEmployee(),
-      },
+          home: const Home(),
         );
       },
     );
   }
 }
+
+
+class Home extends StatelessWidget {
+  const Home({Key? key}) : super(key: key);
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          elevation: 2,
+          title: Text("Material Theme Builder"),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Update with your UI',
+              ),
+            ],
+          ),
+        ),
+        floatingActionButton:
+            FloatingActionButton(onPressed: () => {}, tooltip: 'Increment'));
+  }
+}    
+

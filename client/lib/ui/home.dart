@@ -1,11 +1,7 @@
-import 'package:employee_edit_app/api/api_service.dart';
 import 'package:employee_edit_app/globals.dart';
-import 'package:employee_edit_app/model/employee.dart';
 import 'package:employee_edit_app/ui/employee/add_employee.dart';
-import 'package:employee_edit_app/ui/employee/edit_employee.dart';
 import 'package:employee_edit_app/ui/employee/employee_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
